@@ -16,7 +16,7 @@ pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
 generation_config = GenerationConfig(
     do_stream=True,
-    max_new_tokens=100
+    min_length=1
 )
 
 app = Flask(__name__)
