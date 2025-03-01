@@ -20,13 +20,14 @@ pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 generation_config = GenerationConfig(
     do_stream=True,
     min_length=1,
-    max_length=200,
-    temperature=0.7,
-    top_k=50,
-    top_p=0.9,
-    repetition_penalty=1.2,
-    no_repeat_ngram_size=2,
-    length_penalty=1.0
+    max_new_tokens=200,         # Control only the number of new tokens generated
+    temperature=0.7,            # More coherent but creative output
+    top_k=50,                   # Control randomness
+    top_p=0.9,                  # Nucleus sampling for better coherence
+    repetition_penalty=1.2,     # Penalize repetition
+    no_repeat_ngram_size=2,     # Avoid repeating phrases
+    length_penalty=1.0,         # Balanced length of output
+    do_sample=True              # Enable sampling with top_p
 )
 
 app = Flask(__name__)
