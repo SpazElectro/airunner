@@ -12,7 +12,7 @@ if ngrok_auth_token:
 else:
     raise ValueError("ERROR: No ngrok auth token found in userdata!")
 
-pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+pipe = pipeline("text-generation", model="microsoft/phi-1_5")
 
 generation_config = GenerationConfig(
     do_stream=True,
