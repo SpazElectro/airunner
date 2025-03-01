@@ -2,7 +2,6 @@ import json, os, threading, subprocess
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from transformers import pipeline, GenerationConfig
-from pyngrok import ngrok
 
 ngrok_auth_token = os.getenv("NGROK_AUTH_TOKEN")
 url = os.getenv("SEVER_URL")
