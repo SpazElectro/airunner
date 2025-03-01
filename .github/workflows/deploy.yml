@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pip install flask flask-cors transformers
+          pip install flask flask-cors transformers pyngrok
 
 
       - name: Run AI Server
