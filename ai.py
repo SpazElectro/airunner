@@ -1,5 +1,5 @@
 import json, os, threading, subprocess
-from flask import Flask, request, Response
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from transformers import pipeline, GenerationConfig
 from pyngrok import ngrok
@@ -12,7 +12,7 @@ if ngrok_auth_token:
 else:
     raise ValueError("ERROR: No ngrok auth token found in userdata!")
 
-pipe = pipeline("text-generation", model="microsoft/phi-1_5")
+pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
 generation_config = GenerationConfig(
     do_stream=True,
@@ -22,18 +22,13 @@ generation_config = GenerationConfig(
 app = Flask(__name__)
 CORS(app)
 
-def format_messages(messages):
-    return "\n".join(f"{m['role'].capitalize()}: {m['content']}" for m in messages) + "\nAssistant:"
-
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.json
     messages = data.get("messages", [{"role": "user", "content": "Hello!"}])
 
-    formatted_text = format_messages(messages)
-
     def stream():
-        for chunk in pipe(formatted_text, generation_config=generation_config, return_full_text=False):
+        for chunk in pipe(messages, generation_config=generation_config, return_full_text=False):
             yield json.dumps({"response": chunk["generated_text"]}) + "\n"
 
     return Response(stream(), content_type="application/json")
