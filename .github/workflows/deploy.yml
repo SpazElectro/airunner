@@ -28,5 +28,5 @@ jobs:
       - name: Run AI Server
         env:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-          SEVER_URL: ${{ secrets.SERVER_URL }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
         run: python ai.py
