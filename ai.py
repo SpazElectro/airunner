@@ -48,10 +48,10 @@ def generate():
     prompt_lines = []
     for msg in messages:
         if msg["role"] == "user":
-            prompt_lines.append("You: " + msg["content"])
+            prompt_lines.append("User: " + msg["content"])
         elif msg["role"] == "assistant":
-            prompt_lines.append("Qwen: " + msg["content"])
-    prompt = "\n".join(prompt_lines) + "\nQwen: "
+            prompt_lines.append("Assistant: " + msg["content"])
+    prompt = "\n".join(prompt_lines) + "\nAssistant: "
 
     def stream():
         try:
