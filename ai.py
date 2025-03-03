@@ -15,19 +15,19 @@ if ngrok_auth_token:
 else:
     raise ValueError("ERROR: No ngrok auth token found in userdata!")
 
-pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+pipe = pipeline("text-generation", model="Qwen/Qwen2.5-0.5B")
 
 generation_config = GenerationConfig(
     do_stream=True,
     min_length=1,
-    max_new_tokens=200,         # Control only the number of new tokens generated
-    temperature=0.7,            # More coherent but creative output
-    top_k=50,                   # Control randomness
+    max_new_tokens=200,         # Control the number of new tokens generated
+    temperature=0.7,            # For more coherent but creative output
+    top_k=50,                   # Controls randomness
     top_p=0.9,                  # Nucleus sampling for better coherence
     repetition_penalty=1.2,     # Penalize repetition
     no_repeat_ngram_size=2,     # Avoid repeating phrases
-    length_penalty=1.0,         # Balanced length of output
-    do_sample=True              # Enable sampling with top_p
+    length_penalty=1.0,         # Balanced output length
+    do_sample=True              # Enable sampling with temperature/top_p
 )
 
 app = Flask(__name__)
@@ -40,12 +40,22 @@ def generate():
         return jsonify({"error": "No messages provided"}), 400
 
     messages = data["messages"]
-    if not isinstance(messages, list) or not all(isinstance(msg, dict) and "role" in msg and "content" in msg for msg in messages):
+    if not isinstance(messages, list) or not all(
+        isinstance(msg, dict) and "role" in msg and "content" in msg for msg in messages
+    ):
         return jsonify({"error": "Invalid message format"}), 400
+
+    prompt_lines = []
+    for msg in messages:
+        if msg["role"] == "user":
+            prompt_lines.append("You: " + msg["content"])
+        elif msg["role"] == "assistant":
+            prompt_lines.append("Qwen: " + msg["content"])
+    prompt = "\n".join(prompt_lines) + "\nQwen: "
 
     def stream():
         try:
-            for chunk in pipe(messages, generation_config=generation_config, return_full_text=False):
+            for chunk in pipe(prompt, generation_config=generation_config, return_full_text=False):
                 yield json.dumps({"response": chunk["generated_text"]}) + "\n"
         except Exception as e:
             yield json.dumps({"error": f"An error occurred: {str(e)}"}) + "\n"
